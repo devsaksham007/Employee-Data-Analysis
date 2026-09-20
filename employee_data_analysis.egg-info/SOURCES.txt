@@ -1,0 +1,14 @@
+README.md
+pyproject.toml
+app/__init__.py
+app/main.py
+app/api/__init__.py
+app/api/routes.py
+app/core/config.py
+app/core/security.py
+app/schemas/employee.py
+employee_data_analysis.egg-info/PKG-INFO
+employee_data_analysis.egg-info/SOURCES.txt
+employee_data_analysis.egg-info/dependency_links.txt
+employee_data_analysis.egg-info/requires.txt
+employee_data_analysis.egg-info/top_level.txt
