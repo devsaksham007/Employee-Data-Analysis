@@ -9,7 +9,12 @@ from app.services.csv_loader import CSVLoader, CSVValidationError
 
 @pytest.fixture
 def valid_csv_bytes() -> bytes:
-    return b"Employee ID,Name,Department,Salary\nEMP001,Alice,Engineering,75000\nEMP002,Bob,HR,68000\nEMP003,Carol,Engineering,90000\n"
+    return (
+        b"Employee ID,Name,Department,Salary\n"
+        b"EMP001,Alice,Engineering,75000\n"
+        b"EMP002,Bob,HR,68000\n"
+        b"EMP003,Carol,Engineering,90000\n"
+    )
 
 
 def test_csv_loader_accepts_valid_csv(valid_csv_bytes: bytes) -> None:
@@ -32,7 +37,11 @@ def test_csv_loader_rejects_missing_required_columns() -> None:
 
 def test_csv_loader_reports_invalid_salary_values() -> None:
     loader = CSVLoader()
-    csv_bytes = b"Employee ID,Name,Department,Salary\nEMP001,Alice,Engineering,75000\nEMP002,Bob,HR,not-a-number\n"
+    csv_bytes = (
+        b"Employee ID,Name,Department,Salary\n"
+        b"EMP001,Alice,Engineering,75000\n"
+        b"EMP002,Bob,HR,not-a-number\n"
+    )
 
     result = loader.load_from_bytes(csv_bytes, "employees.csv")
 

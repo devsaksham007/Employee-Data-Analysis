@@ -10,24 +10,33 @@ from app.services.export import CSVExporter, ExportValidationError
 router = APIRouter(prefix="/api", tags=["employee-data"])
 
 
+def error_response(message: str, status_code: int = 400) -> JSONResponse:
+    return JSONResponse(
+        status_code=status_code,
+        content={"status": "error", "message": message},
+    )
+
+
 @router.get("/health")
 def health_check() -> dict[str, str]:
     return {"status": "ok"}
 
 
 @router.post("/upload", response_model=None)
-async def upload_employee_csv(file: UploadFile) -> dict[str, object] | JSONResponse:
+async def upload_employee_csv(
+    file: UploadFile,
+) -> dict[str, object] | JSONResponse:
     if file.filename is None:
-        return JSONResponse(status_code=400, content={"status": "error", "message": "A CSV file is required."})
+        return error_response("A CSV file is required.")
 
     if not file.filename.lower().endswith(ALLOWED_EXTENSION):
-        return JSONResponse(status_code=400, content={"status": "error", "message": "Only CSV files are allowed."})
+        return error_response("Only CSV files are allowed.")
 
     try:
         file_bytes = await file.read()
         result = CSVLoader().load_from_bytes(file_bytes, file.filename)
     except CSVValidationError as exc:
-        return JSONResponse(status_code=400, content={"status": "error", "message": str(exc)})
+        return error_response(str(exc))
 
     safe_filename = sanitize_filename(file.filename)
     return {
@@ -46,21 +55,25 @@ async def analyze_employee_csv(
     include_equal: str = Form("false"),
 ) -> dict[str, object] | JSONResponse:
     if file.filename is None:
-        return JSONResponse(status_code=400, content={"status": "error", "message": "A CSV file is required."})
+        return error_response("A CSV file is required.")
 
     try:
         threshold_value = float(threshold)
     except ValueError:
-        return JSONResponse(status_code=400, content={"status": "error", "message": "Threshold must be numeric."})
+        return error_response("Threshold must be numeric.")
 
     try:
         file_bytes = await file.read()
         result = CSVLoader().load_from_bytes(file_bytes, file.filename)
     except CSVValidationError as exc:
-        return JSONResponse(status_code=400, content={"status": "error", "message": str(exc)})
+        return error_response(str(exc))
 
     analytics = EmployeeAnalytics()
-    filtered = analytics.filter_by_salary(result.df, threshold_value, include_equal=(include_equal.lower() == "true"))
+    filtered = analytics.filter_by_salary(
+        result.df,
+        threshold_value,
+        include_equal=(include_equal.lower() == "true"),
+    )
     department_counts = analytics.department_counts(result.df)
 
     return {
@@ -81,22 +94,30 @@ async def export_employee_csv(
     filename: str = Form("filtered.csv"),
 ) -> dict[str, object] | JSONResponse:
     if file.filename is None:
-        return JSONResponse(status_code=400, content={"status": "error", "message": "A CSV file is required."})
+        return error_response("A CSV file is required.")
 
     try:
         threshold_value = float(threshold)
     except ValueError:
-        return JSONResponse(status_code=400, content={"status": "error", "message": "Threshold must be numeric."})
+        return error_response("Threshold must be numeric.")
 
     try:
         file_bytes = await file.read()
         result = CSVLoader().load_from_bytes(file_bytes, file.filename)
         analytics = EmployeeAnalytics()
-        filtered = analytics.filter_by_salary(result.df, threshold_value, include_equal=(include_equal.lower() == "true"))
+        filtered = analytics.filter_by_salary(
+            result.df,
+            threshold_value,
+            include_equal=(include_equal.lower() == "true"),
+        )
         exporter = CSVExporter()
-        output_path = exporter.export_dataframe(filtered, filename, ["employee_id", "name", "department", "salary"])
+        output_path = exporter.export_dataframe(
+            filtered,
+            filename,
+            ["employee_id", "name", "department", "salary"],
+        )
     except (CSVValidationError, ExportValidationError) as exc:
-        return JSONResponse(status_code=400, content={"status": "error", "message": str(exc)})
+        return error_response(str(exc))
 
     return {
         "status": "success",

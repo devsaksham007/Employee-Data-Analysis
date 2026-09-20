@@ -7,7 +7,12 @@ from app.main import app
 
 def test_analyze_endpoint_returns_summary_metrics() -> None:
     client = TestClient(app)
-    content = b"Employee ID,Name,Department,Salary\nEMP001,Alice,Engineering,75000\nEMP002,Bob,HR,68000\nEMP003,Cara,Engineering,90000\n"
+    content = (
+        b"Employee ID,Name,Department,Salary\n"
+        b"EMP001,Alice,Engineering,75000\n"
+        b"EMP002,Bob,HR,68000\n"
+        b"EMP003,Cara,Engineering,90000\n"
+    )
 
     response = client.post(
         "/api/analyze",
@@ -25,7 +30,12 @@ def test_analyze_endpoint_returns_summary_metrics() -> None:
 
 def test_export_endpoint_creates_a_csv_file() -> None:
     client = TestClient(app)
-    content = b"Employee ID,Name,Department,Salary\nEMP001,Alice,Engineering,75000\nEMP002,Bob,HR,68000\nEMP003,Cara,Engineering,90000\n"
+    content = (
+        b"Employee ID,Name,Department,Salary\n"
+        b"EMP001,Alice,Engineering,75000\n"
+        b"EMP002,Bob,HR,68000\n"
+        b"EMP003,Cara,Engineering,90000\n"
+    )
 
     response = client.post(
         "/api/export",

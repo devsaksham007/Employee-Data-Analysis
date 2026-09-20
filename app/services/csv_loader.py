@@ -2,11 +2,10 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from io import StringIO
-from pathlib import Path
 
 import pandas as pd
 
-from app.core.config import ALLOWED_EXTENSION, DEFAULT_SCHEMA_MAPPING, MAX_UPLOAD_SIZE_BYTES
+from app.core.config import DEFAULT_SCHEMA_MAPPING, MAX_UPLOAD_SIZE_BYTES
 from app.core.security import sanitize_filename
 
 
@@ -101,15 +100,27 @@ class CSVLoader:
         result["salary"] = salary_series
         return result
 
-    def _summarize_validation(self, df: pd.DataFrame, raw_salary: pd.Series | None = None) -> ValidationSummary:
+    def _summarize_validation(
+        self,
+        df: pd.DataFrame,
+        raw_salary: pd.Series | None = None,
+    ) -> ValidationSummary:
         total_rows = int(len(df))
-        valid_mask = df["salary"].notna() & df["employee_id"].astype("string").str.len().gt(0)
+        valid_mask = (
+            df["salary"].notna()
+            & df["employee_id"].astype("string").str.len().gt(0)
+        )
         valid_rows = int(valid_mask.sum())
         invalid_rows = total_rows - valid_rows
 
         source_salary = raw_salary if raw_salary is not None else df["salary"]
         missing_salary = int(source_salary.isna().sum())
-        duplicate_employee_ids = int(df.loc[df["employee_id"].astype("string").duplicated(keep=False), "employee_id"].nunique())
+        duplicate_employee_ids = int(
+            df.loc[
+                df["employee_id"].astype("string").duplicated(keep=False),
+                "employee_id",
+            ].nunique()
+        )
 
         return ValidationSummary(
             total_rows=total_rows,

@@ -28,7 +28,12 @@ class EmployeeAnalytics:
         counts.columns = ["department", "employee_count"]
         return counts
 
-    def filter_by_salary(self, df: pd.DataFrame, threshold: float, include_equal: bool = False) -> pd.DataFrame:
+    def filter_by_salary(
+        self,
+        df: pd.DataFrame,
+        threshold: float,
+        include_equal: bool = False,
+    ) -> pd.DataFrame:
         if df.empty:
             return df.copy()
 

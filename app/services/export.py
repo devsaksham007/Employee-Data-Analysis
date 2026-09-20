@@ -26,7 +26,12 @@ class CSVExporter:
             return "'" + text
         return text
 
-    def export_dataframe(self, df: pd.DataFrame, filename: str, include_columns: list[str] | None = None) -> Path:
+    def export_dataframe(
+        self,
+        df: pd.DataFrame,
+        filename: str,
+        include_columns: list[str] | None = None,
+    ) -> Path:
         if not filename or not filename.strip():
             raise ExportValidationError("Export filename is required.")
 
@@ -43,11 +48,16 @@ class CSVExporter:
         try:
             target_path.relative_to(allowed_root)
         except ValueError as exc:
-            raise ExportValidationError("Export path is outside the allowed directory.") from exc
+            raise ExportValidationError(
+                "Export path is outside the allowed directory."
+            ) from exc
 
         export_df = df.copy()
         if include_columns is not None:
-            export_df = export_df.loc[:, [column for column in include_columns if column in export_df.columns]]
+            export_df = export_df.loc[
+                :,
+                [column for column in include_columns if column in export_df.columns],
+            ]
 
         safe_export = export_df.copy()
         for column in safe_export.columns:

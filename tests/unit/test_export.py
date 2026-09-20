@@ -16,7 +16,11 @@ def test_export_dataframe_writes_safe_csv(tmp_path: Path) -> None:
         }
     )
 
-    target = exporter.export_dataframe(df, "filtered.csv", ["employee_id", "name", "department", "salary"])
+    target = exporter.export_dataframe(
+        df,
+        "filtered.csv",
+        ["employee_id", "name", "department", "salary"],
+    )
 
     assert target.exists()
     contents = target.read_text(encoding="utf-8")
@@ -30,6 +34,6 @@ def test_export_dataframe_rejects_untrusted_output_path(tmp_path: Path) -> None:
 
     try:
         exporter.export_dataframe(df, "../outside.csv")
-        assert False, "Expected ExportValidationError"
+        raise AssertionError("Expected ExportValidationError")
     except ExportValidationError:
         pass
