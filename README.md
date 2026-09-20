@@ -264,6 +264,14 @@ This project demonstrates a strong portfolio mix of:
 - Python API development
 - end-to-end local workflow design
 
+## Project snapshot
+
+> Built as a secure, local-first employee analytics workflow that validates CSV data, calculates salary insights, and exports sanitized results while preserving safe, controlled local file handling.
+
 ## Final note
 
 This project is a solid foundation for a real-world employee analytics workflow. It is ready for local demonstration, portfolio presentation, and future extension with a production dataset once that source becomes available.
+
+GitHub-ready summary:
+
+"A secure local-first employee CSV analytics app built with Python and FastAPI that validates uploaded data, computes salary insights, filters employees by threshold, and exports spreadsheet-safe CSV results."
